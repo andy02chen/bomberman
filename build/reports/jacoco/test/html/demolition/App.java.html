@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class App extends PApplet {
+    /**
+    * Width of the window
+     */
+    public static final int WIDTH = 480;
+
+    /**
+    * Height of the window
+     */
+    public static final int HEIGHT = 480;
+
+    /**
+    * The number of frames per second
+     */
+    public static final int FPS = 60;
+    
+    /**
+    * Specifies whether the app should reset the map or not
+    * True = reset and false = not reset;
+     */
+<span class="fc" id="L36">    public static boolean reset = true;</span>
+
+    /**
+    * Player loses
+     */
+<span class="fc" id="L41">    public static boolean lose = false;</span>
+
+    /**
+    * Player wins
+     */
+<span class="fc" id="L46">    public static boolean win = false;</span>
+
+    /**
+    * Did the player press left
+     */
+<span class="fc" id="L51">    public static boolean leftPressed = false;</span>
+
+    /**
+    * Did the player press right
+     */
+<span class="fc" id="L56">    public static boolean rightPressed = false;</span>
+
+    /**
+    * Did the player press up
+     */
+<span class="fc" id="L61">    public static boolean upPressed = false;</span>
+
+    /**
+    * Did the player press down
+     */
+<span class="fc" id="L66">    public static boolean downPressed = false;</span>
+
+    /**
+    * Did the player press space
+     */
+<span class="fc" id="L71">    public static boolean spacePressed = false;</span>
+
+    /**
+    * Lives class
+    */
+    public static Lives noLives;
+
+    /**
+    * Player class
+    */
+    public static Player player;
+
+    /**
+    * Timer class
+    */
+    public static Clock timer;
+
+    /**
+    * The font used
+    */
+    public static PFont font;
+
+    /**
+    * Map class
+    */
+    public static Map mapClass;
+
+    /**
+    * Goal class
+    */
+    public static Tile goal;
+
+<span class="fc" id="L103">    public App() {</span>
+<span class="fc" id="L104">    }</span>
+
+    public void settings() {
+<span class="fc" id="L107">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+    * Loads the images and the font to be used later.
+    */
+    public void setup() {
+<span class="fc" id="L114">        frameRate(FPS);</span>
+        
+<span class="fc" id="L116">        mapClass = new Map(this);</span>
+<span class="fc" id="L117">        mapClass.setup();</span>
+
+<span class="fc" id="L119">        font = this.createFont(&quot;src/main/resources/PressStart2P-Regular.ttf&quot;,21);</span>
+<span class="fc" id="L120">        this.textFont(font);</span>
+<span class="fc" id="L121">        this.textSize(21);</span>
+<span class="fc" id="L122">        this.fill(0);</span>
+<span class="fc" id="L123">    }</span>
+
+    /**
+    * Responsible for displaying the objects of the game.
+    */
+    public void draw() {
+<span class="fc" id="L129">        background(239, 159, 0);</span>
+
+<span class="pc bpc" id="L131" title="1 of 4 branches missed.">        if(!lose &amp;&amp; !win) {</span>
+<span class="fc" id="L132">            mapClass.displayLevel(this);</span>
+<span class="fc" id="L133">            this.noLives.draw(this);</span>
+<span class="fc" id="L134">            this.noLives.tick();</span>
+<span class="fc" id="L135">            this.timer.draw(this); </span>
+<span class="fc" id="L136">            this.timer.tick();</span>
+            
+<span class="fc" id="L138">            mapClass.bombDraw(this);</span>
+<span class="fc" id="L139">            mapClass.bombTick();</span>
+
+<span class="fc" id="L141">            mapClass.explosionsDraw(this);</span>
+<span class="fc" id="L142">            mapClass.explosionsTick();</span>
+
+<span class="fc" id="L144">            mapClass.peopleDraw(this);</span>
+<span class="fc" id="L145">            mapClass.peopleTick();</span>
+            
+
+<span class="pc bpc" id="L148" title="3 of 4 branches missed.">        } else if (lose &amp;&amp; !win) {</span>
+<span class="nc" id="L149">            this.text(&quot;GAME OVER&quot;,100, 240);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        } else if(win) {</span>
+<span class="fc" id="L151">            this.text(&quot;YOU WIN&quot;,100, 240);</span>
+        }
+<span class="fc" id="L153">    }  </span>
+
+    /**
+    * Checks for user input
+    */
+    public void keyPressed() {
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (this.player.getMoved() == false) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            if(this.keyCode == 37) {</span>
+<span class="fc" id="L161">                this.leftPressed = true;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">            } else if(this.keyCode == 38) {</span>
+<span class="fc" id="L163">                this.upPressed = true;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            } else if(this.keyCode == 39) {</span>
+<span class="fc" id="L165">                this.rightPressed = true;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            } else if(this.keyCode == 40) {</span>
+<span class="fc" id="L167">                this.downPressed = true;</span>
+            }
+        }
+
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if(this.keyCode == 32) {</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            if(!this.spacePressed) {</span>
+<span class="fc" id="L173">                mapClass.addBomb(new Bomb(this.player.getX(), this.player.getY() + mapClass.getExtraPlayerHeight(), mapClass.getBomb1()));</span>
+<span class="fc" id="L174">                this.spacePressed = true;</span>
+            }
+            
+        }
+<span class="fc" id="L178">    }</span>
+
+    /**
+    * Checks for when the user releases the keys.
+    */
+    public void keyReleased() {
+
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if(this.keyCode == 37) {</span>
+<span class="fc" id="L186">            this.leftPressed = false;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        } else if (this.keyCode == 39) {</span>
+<span class="fc" id="L188">            this.rightPressed = false;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        } else if (this.keyCode == 38) {</span>
+<span class="fc" id="L190">            this.upPressed = false;</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        } else if (this.keyCode == 40) {</span>
+<span class="fc" id="L192">            this.downPressed = false;</span>
+        }
+
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if(this.keyCode == 32) {</span>
+<span class="fc" id="L196">            this.spacePressed = false;</span>
+        }
+
+<span class="pc bpc" id="L199" title="4 of 10 branches missed.">        if(!this.leftPressed &amp;&amp; !this.rightPressed &amp;&amp; !this.downPressed &amp;&amp; !this.upPressed &amp;&amp; this.player.getMoved()) {</span>
+<span class="fc" id="L200">            this.player.personMoved();</span>
+        }
+<span class="fc" id="L202">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L205">        PApplet.main(&quot;demolition.App&quot;);</span>
+<span class="nc" id="L206">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Person.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Person.java</span></div><h1>Person.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+
+import processing.core.PImage;
+
+import java.util.ArrayList;
+
+import java.util.Comparator;
+
+public abstract class Person extends GameObject {
+
+    /**
+    * Variable for facing up
+    */
+    protected boolean faceUp;
+
+    /**
+    * Variable for facing down
+    */
+    protected boolean faceDown;
+
+    /**
+    * Variable for facing left
+    */
+    protected boolean faceLeft;
+
+    /**
+    * Variable for facing rightt
+    */
+    protected boolean faceRight;
+
+    /**
+    * Variable for if the person is alive
+    */
+    protected boolean alive;
+
+    /**
+    * Variable for whether the person can move up
+    */
+    protected boolean canMoveUp;
+
+    /**
+    * Variable for if the person is able to move down
+    */
+    protected boolean canMoveDown;
+    
+    /**
+    * Variable for whether or not the person can move left
+    */
+    protected boolean canMoveLeft;
+
+    /**
+    * Variable for whether or not the person is able to move right
+    */
+    protected boolean canMoveRight;
+
+    /**
+    * Variable that states whether the person has moved or not
+    */
+    protected boolean moved;
+
+    /**
+    * Variable for if the person's available moved are found
+    */
+    protected boolean movesFound;
+
+    /**
+    * Which frame for the animation
+    */
+<span class="fc" id="L71">    protected int animationFrame = 1;</span>
+
+    /**
+    * How many frames per animation
+    */
+<span class="fc" id="L76">    protected final int framesPerAnimation = 12;</span>
+
+    /**
+    * Counts the frame
+    */
+<span class="fc" id="L81">    protected int frameCounter = 0;</span>
+
+    /**
+    * Constructor for a Person
+    * @param x, the x coordinate
+    * @param y, the y coordinate
+    * @param sprite, the image for the Person
+    */
+    public Person(int x, int y, PImage sprite) {
+<span class="fc" id="L90">        super(x,y,sprite);</span>
+<span class="fc" id="L91">        this.faceUp = false;</span>
+<span class="fc" id="L92">        this.faceDown = true;</span>
+<span class="fc" id="L93">        this.faceLeft = false;</span>
+<span class="fc" id="L94">        this.faceRight = false;</span>
+<span class="fc" id="L95">        this.alive = true;</span>
+<span class="fc" id="L96">        this.moved = false;</span>
+<span class="fc" id="L97">        this.canMoveUp = false;</span>
+<span class="fc" id="L98">        this.canMoveDown = false;</span>
+<span class="fc" id="L99">        this.canMoveLeft = false;</span>
+<span class="fc" id="L100">        this.canMoveRight = false;</span>
+<span class="fc" id="L101">        this.movesFound = false;</span>
+<span class="fc" id="L102">    }</span>
+
+    /**
+    * Abstract method for changing to up direction
+    */
+    public abstract void changeDirectionUp();
+
+    /**
+    * Abstract method for changing to down direction
+    */
+    public abstract void changeDirectionDown();
+
+    /**
+    * Abstract method for changing to left direction
+    */
+    public abstract void changeDirectionLeft();
+
+    /**
+    * Abstract method for changing to right direction
+    */
+    public abstract void changeDirectionRight();
+
+    /**
+    * Abstract method to for the tick function
+    */
+    public abstract void tick();
+
+    /**
+    * Abstract method for drawing the person
+    * @param app, the app for drawing
+    */
+    public abstract void draw(PApplet app);
+
+    /**
+    * Moves th person left
+    */
+    public void moveLeft() {
+<span class="fc" id="L139">        this.personMoved();</span>
+<span class="fc" id="L140">        this.x = this.x - Map.getTileWidth();</span>
+<span class="fc" id="L141">        this.movesFound = false;</span>
+<span class="fc" id="L142">    }</span>
+
+    /**
+    * Moves the person right
+    */
+    public void moveRight() {
+<span class="fc" id="L148">        this.personMoved();</span>
+<span class="fc" id="L149">        this.x = this.x + Map.getTileWidth();</span>
+<span class="fc" id="L150">        this.movesFound = false;</span>
+<span class="fc" id="L151">    }</span>
+
+    /**
+    * Moves the person down
+    */
+    public void moveDown() {
+<span class="fc" id="L157">        this.personMoved();</span>
+<span class="fc" id="L158">        this.y = this.y + Map.getTileWidth();</span>
+<span class="fc" id="L159">        this.movesFound = false;</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+    * Moves the person up
+    */
+    public void moveUp() {
+<span class="fc" id="L166">        this.personMoved();</span>
+<span class="fc" id="L167">        this.y = this.y - Map.getTileWidth();</span>
+<span class="fc" id="L168">        this.movesFound = false;</span>
+<span class="fc" id="L169">    }</span>
+
+    /**
+    * Returns whether the person has moved
+    * @return has the person moved
+    */
+    public boolean getMoved() {
+<span class="fc" id="L176">        return this.moved;</span>
+    }
+
+    /**
+    * Changes the person's move status
+    */
+    public void personMoved() {
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if(this.moved) {</span>
+<span class="fc" id="L184">            this.moved = false;</span>
+        } else {
+<span class="fc" id="L186">            this.moved = true;</span>
+        }
+<span class="fc" id="L188">    }</span>
+
+    /**
+    * Determines where the person can move to
+    */
+    public void findMoves() {
+
+<span class="fc" id="L195">        int personX = this.x / Map.getTileWidth();</span>
+<span class="fc" id="L196">        int personY = ((this.y + Map.getExtraPlayerHeight()) / Map.getTileWidth()) - Map.getPixelOffset();</span>
+
+<span class="fc" id="L198">        ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; layout = Map.getMap();</span>
+
+<span class="fc" id="L200">        GameObject leftMove = layout.get(personY).get(personX - 1);</span>
+<span class="fc" id="L201">        GameObject rightMove = layout.get(personY).get(personX + 1);</span>
+<span class="fc" id="L202">        GameObject upMove = layout.get(personY - 1).get(personX);</span>
+<span class="fc" id="L203">        GameObject downMove = layout.get(personY + 1).get(personX);</span>
+
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if(((Tile)leftMove).isEmpty()) {</span>
+<span class="fc" id="L206">            this.canMoveLeft = true;</span>
+        } else {
+<span class="fc" id="L208">            this.canMoveLeft = false;</span>
+        }
+
+<span class="fc bfc" id="L211" title="All 2 branches covered.">        if(((Tile)rightMove).isEmpty()) {</span>
+<span class="fc" id="L212">            this.canMoveRight = true;</span>
+        } else {
+<span class="fc" id="L214">            this.canMoveRight = false;</span>
+        }
+
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if(((Tile)upMove).isEmpty()) {</span>
+<span class="fc" id="L218">            this.canMoveUp = true;</span>
+        } else {
+<span class="fc" id="L220">            this.canMoveUp = false;</span>
+        }
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if(((Tile)downMove).isEmpty()) {</span>
+<span class="fc" id="L224">            this.canMoveDown = true;</span>
+        } else {
+<span class="fc" id="L226">            this.canMoveDown = false;</span>
+        }
+
+<span class="fc" id="L229">        this.movesFound = true;</span>
+<span class="fc" id="L230">    }</span>
+
+    /**
+    * Comparator for ordering how the people are displayed
+    */
+<span class="fc" id="L235">    public static Comparator&lt;Person&gt; PersonComparator = new Comparator&lt;Person&gt;() {</span>
+
+       public int compare(Person a, Person b) {
+
+<span class="fc" id="L239">           int aCompare = a.getY();</span>
+<span class="fc" id="L240">           int bCompare = b.getY();</span>
+
+<span class="fc" id="L242">           return aCompare - bCompare;</span>
+
+       }
+    };
+
+    /**
+    * The person is dead
+    */
+    public void die() {
+<span class="fc" id="L251">        this.alive = false;</span>
+<span class="fc" id="L252">    }</span>
+
+    /**
+    * Returns whether or not the person is alive
+    * @return is the person alive
+    */
+    public boolean getAlive() {
+<span class="fc" id="L259">        return this.alive;</span>
+    }
+
+    /**
+    * Determines if the person has touch an explosion
+    */
+    public void touchExplosion() {
+<span class="fc" id="L266">        ArrayList&lt;Explosion&gt; fire = App.mapClass.getBooms();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        for(Explosion explosion : fire) {</span>
+<span class="fc bfc" id="L268" title="All 4 branches covered.">            if(explosion.getX() == this.x &amp;&amp; explosion.getY() == (this.y + Map.getExtraPlayerHeight())) {</span>
+<span class="fc" id="L269">                this.die();</span>
+<span class="fc" id="L270">                App.mapClass.kill();</span>
+            }
+<span class="fc" id="L272">        }</span>
+<span class="fc" id="L273">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Red.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Red.java</span></div><h1>Red.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+
+import processing.core.PImage;
+
+import java.util.Random;
+
+import java.util.ArrayList;
+
+public class Red extends Person {
+
+<span class="fc" id="L13">    private int moveCounter = 0;</span>
+    private ArrayList&lt;String&gt; chooseMove;
+<span class="fc" id="L15">    private Random rand = new Random();</span>
+
+    /**
+    * Constuctor for a red enemy
+    * @param sprite, the enemy'y image
+    * @param x, the x value
+    * @param y, the y value
+    */
+    public Red(PImage sprite, int x, int y) {
+<span class="fc" id="L24">        super(x,y,sprite);</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+    * Draws the red enemy
+    * @param app, the app that draws
+    */
+    public void draw(PApplet app) {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if(this.alive) {</span>
+<span class="fc" id="L33">            app.image(this.sprite, this.x, this.y);</span>
+        }
+<span class="fc" id="L35">    }</span>
+
+    /**
+    * Handles the logic for the red enemy
+    * such as movement, animation and death.
+    */
+    public void tick() {
+<span class="fc" id="L42">        touchExplosion();</span>
+<span class="fc" id="L43">        this.frameCounter++;</span>
+
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if(this.y == App.player.getY() &amp;&amp; this.x == App.player.getX()) {</span>
+<span class="nc" id="L46">            App.noLives.decreaseLives();</span>
+        }
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if(this.frameCounter == this.framesPerAnimation) {</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if(faceDown) {</span>
+<span class="fc" id="L52">                this.sprite =  App.mapClass.getDownAnimationRed().get(this.animationFrame);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            } else if (faceUp) {</span>
+<span class="fc" id="L54">                this.sprite =  App.mapClass.getUpAnimationRed().get(this.animationFrame);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            } else if (faceRight) {</span>
+<span class="fc" id="L56">                this.sprite =  App.mapClass.getRightAnimationRed().get(this.animationFrame);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">            } else if (faceLeft) {</span>
+<span class="fc" id="L58">                this.sprite =  App.mapClass.getLeftAnimationRed().get(this.animationFrame);</span>
+            }
+            
+<span class="fc" id="L61">            this.animationFrame++;</span>
+<span class="fc" id="L62">            this.moveCounter++;</span>
+<span class="fc" id="L63">            this.frameCounter = 0;</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if(this.moveCounter == 5) {</span>
+<span class="fc" id="L66">                this.personMoved();</span>
+<span class="fc" id="L67">                this.moveCounter = 0;</span>
+            }
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if(this.animationFrame == 5) {</span>
+<span class="fc" id="L71">                this.animationFrame = 1;</span>
+            }
+        }
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if(!movesFound) {</span>
+<span class="fc" id="L76">            findMoves();</span>
+<span class="fc" id="L77">            chooseMove = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            if(this.canMoveDown) {</span>
+<span class="fc" id="L80">                chooseMove.add(&quot;down&quot;);</span>
+            }
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            if(this.canMoveLeft) {</span>
+<span class="fc" id="L84">                chooseMove.add(&quot;left&quot;);</span>
+            }
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if(this.canMoveUp) {</span>
+<span class="fc" id="L88">                chooseMove.add(&quot;up&quot;);</span>
+            }
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            if(this.canMoveRight) {</span>
+<span class="fc" id="L92">                chooseMove.add(&quot;right&quot;);</span>
+            }
+        }
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if(!moved) {</span>
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">             if(faceDown) {</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                if(this.canMoveDown) {</span>
+<span class="nc" id="L100">                    this.moveDown();</span>
+<span class="nc" id="L101">                    this.changeDirectionDown();</span>
+
+                } else {
+<span class="fc" id="L104">                    int whichWay = rand.nextInt(chooseMove.size());</span>
+<span class="fc" id="L105">                    String toMove = chooseMove.get(whichWay);</span>
+
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">                    if(toMove == &quot;left&quot;) {</span>
+<span class="nc" id="L108">                        this.moveLeft();</span>
+<span class="nc" id="L109">                        this.changeDirectionLeft();</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                    } else if(toMove == &quot;up&quot;) {</span>
+<span class="fc" id="L112">                        this.moveUp();</span>
+<span class="fc" id="L113">                        this.changeDirectionUp();</span>
+
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">                    } else if(toMove == &quot;right&quot;) {</span>
+<span class="fc" id="L116">                        this.moveRight();</span>
+<span class="fc" id="L117">                        this.changeDirectionRight();</span>
+
+                    }
+<span class="fc" id="L120">                }</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">            } else if(faceLeft) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                if(this.canMoveLeft) {</span>
+<span class="nc" id="L123">                    this.moveLeft();</span>
+<span class="nc" id="L124">                    this.changeDirectionLeft();</span>
+
+                } else {
+<span class="nc" id="L127">                    int whichWay = rand.nextInt(chooseMove.size());</span>
+<span class="nc" id="L128">                    String toMove = chooseMove.get(whichWay);</span>
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                    if(toMove == &quot;down&quot;) {</span>
+<span class="nc" id="L131">                        this.moveDown();</span>
+<span class="nc" id="L132">                        this.changeDirectionDown();</span>
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                    } else if(toMove == &quot;up&quot;) {</span>
+<span class="nc" id="L135">                        this.moveUp();</span>
+<span class="nc" id="L136">                        this.changeDirectionUp();</span>
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                    } else if(toMove == &quot;right&quot;) {</span>
+<span class="nc" id="L139">                        this.moveRight();</span>
+<span class="nc" id="L140">                        this.changeDirectionRight();</span>
+
+                    }
+<span class="nc" id="L143">                }</span>
+
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            } else if(faceUp) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                if(this.canMoveUp) {</span>
+<span class="nc" id="L147">                    this.moveUp();</span>
+<span class="nc" id="L148">                    this.changeDirectionUp();</span>
+
+                } else {
+<span class="fc" id="L151">                    int whichWay = rand.nextInt(chooseMove.size());</span>
+<span class="fc" id="L152">                    String toMove = chooseMove.get(whichWay);</span>
+
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">                    if(toMove == &quot;left&quot;) {</span>
+<span class="nc" id="L155">                        this.moveLeft();</span>
+<span class="nc" id="L156">                        this.changeDirectionLeft();</span>
+
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                    } else if(toMove == &quot;down&quot;) {</span>
+<span class="fc" id="L159">                        this.moveDown();</span>
+<span class="fc" id="L160">                        this.changeDirectionDown();</span>
+
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                    } else if(toMove == &quot;right&quot;) {</span>
+<span class="nc" id="L163">                        this.moveRight();</span>
+<span class="nc" id="L164">                        this.changeDirectionRight();</span>
+
+                    }
+<span class="fc" id="L167">                }</span>
+
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            } else if(faceRight) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">                if(this.canMoveRight) {</span>
+<span class="fc" id="L171">                    this.moveRight();</span>
+<span class="fc" id="L172">                    this.changeDirectionRight();</span>
+
+                } else {
+<span class="fc" id="L175">                    int whichWay = rand.nextInt(chooseMove.size());</span>
+<span class="fc" id="L176">                    String toMove = chooseMove.get(whichWay);</span>
+
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">                    if(toMove == &quot;left&quot;) {</span>
+<span class="fc" id="L179">                        this.moveLeft();</span>
+<span class="fc" id="L180">                        this.changeDirectionLeft();</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">                    } else if(toMove == &quot;up&quot;) {</span>
+<span class="nc" id="L183">                        this.moveUp();</span>
+<span class="nc" id="L184">                        this.changeDirectionUp();</span>
+
+<span class="nc bnc" id="L186" title="All 2 branches missed.">                    } else if(toMove == &quot;down&quot;) {</span>
+<span class="nc" id="L187">                        this.moveDown();</span>
+<span class="nc" id="L188">                        this.changeDirectionDown();</span>
+
+                    }
+                }
+            }
+
+        }
+<span class="fc" id="L195">    }</span>
+
+    /**
+    * Enemy faces up
+    */
+    public void changeDirectionUp() {
+<span class="fc" id="L201">        this.faceUp = true;</span>
+<span class="fc" id="L202">        this.faceDown = false;</span>
+<span class="fc" id="L203">        this.faceLeft = false;</span>
+<span class="fc" id="L204">        this.faceRight = false;</span>
+<span class="fc" id="L205">        this.sprite =  App.mapClass.getRedUp();</span>
+<span class="fc" id="L206">    }</span>
+
+    /**
+    * Enemy faces down
+    */
+    public void changeDirectionDown() {
+<span class="fc" id="L212">        this.faceUp = false;</span>
+<span class="fc" id="L213">        this.faceDown = true;</span>
+<span class="fc" id="L214">        this.faceLeft = false;</span>
+<span class="fc" id="L215">        this.faceRight = false;</span>
+<span class="fc" id="L216">        this.sprite =  App.mapClass.getRedDown();</span>
+<span class="fc" id="L217">    }</span>
+
+    /**
+    * Enemy faces left
+    */
+    public void changeDirectionLeft() {
+<span class="fc" id="L223">        this.faceUp = false;</span>
+<span class="fc" id="L224">        this.faceDown = false;</span>
+<span class="fc" id="L225">        this.faceLeft = true;</span>
+<span class="fc" id="L226">        this.faceRight = false;</span>
+<span class="fc" id="L227">        this.sprite =  App.mapClass.getRedLeft();</span>
+<span class="fc" id="L228">    }</span>
+
+    /**
+    * Enemy faces right
+    */
+    public void changeDirectionRight() {
+<span class="fc" id="L234">        this.faceUp = false;</span>
+<span class="fc" id="L235">        this.faceDown = false;</span>
+<span class="fc" id="L236">        this.faceLeft = false;</span>
+<span class="fc" id="L237">        this.faceRight = true;</span>
+<span class="fc" id="L238">        this.sprite = App.mapClass.getRedRight();</span>
+<span class="fc" id="L239">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

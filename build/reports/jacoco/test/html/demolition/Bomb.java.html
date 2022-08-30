@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bomb.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Bomb.java</span></div><h1>Bomb.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+
+import processing.core.PImage;
+
+import java.util.ArrayList;
+
+public class Bomb extends GameObject {
+
+<span class="fc" id="L11">    private int frameCounter = 0;</span>
+<span class="fc" id="L12">    private int framesPerAnimation = 15;</span>
+<span class="fc" id="L13">    private int animationFrame = 1;</span>
+<span class="fc" id="L14">    private boolean toRemove = false;</span>
+
+<span class="fc" id="L16">    private boolean upBoom1 = true;</span>
+<span class="fc" id="L17">    private boolean upBoom2 = true;</span>
+<span class="fc" id="L18">    private boolean downBoom1 = true;</span>
+<span class="fc" id="L19">    private boolean downBoom2 = true;</span>
+<span class="fc" id="L20">    private boolean leftBoom1 = true;</span>
+<span class="fc" id="L21">    private boolean leftBoom2 = true;</span>
+<span class="fc" id="L22">    private boolean rightBoom1 = true;</span>
+<span class="fc" id="L23">    private boolean rightBoom2 = true;</span>
+ 
+    /**
+    * Constructor for a bomb
+    * @param x, the x coordinate
+    * @param y, the y coordinate
+    * @param sprite, the image for the bomb
+    */
+    public Bomb(int x, int y, PImage sprite) {
+<span class="fc" id="L32">        super(x, y, sprite);</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+    * Draws the bomb on the screen
+    * @param app, the app that displays the bomb
+    */
+    public void draw(PApplet app) {
+<span class="fc" id="L40">        app.image(this.sprite, this.x, this.y);</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+    * Handles the calculations for the bomb
+    */
+    public void tick() {
+<span class="fc" id="L47">        frameCounter++;</span>
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if(this.frameCounter == this.framesPerAnimation) {</span>
+<span class="fc" id="L50">            this.sprite = App.mapClass.getBombAnimation().get(this.animationFrame);</span>
+<span class="fc" id="L51">            this.animationFrame++;</span>
+<span class="fc" id="L52">            this.frameCounter = 0;</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">            if(this.animationFrame == 9) {</span>
+<span class="fc" id="L55">                this.toRemove = true;</span>
+<span class="fc" id="L56">                findBoom();</span>
+<span class="fc" id="L57">                App.mapClass.removeBombs();</span>
+<span class="fc" id="L58">                addExplosions();</span>
+            }
+        }
+<span class="fc" id="L61">    }</span>
+
+    /**
+    * Returns whether the bomb should be removed
+    * @return if it should be removed
+    */
+    public boolean getRemove() {
+<span class="fc" id="L68">        return this.toRemove;</span>
+    }
+
+    /**
+    * Finds where the bomb's explosions should go
+    */
+    public void findBoom() {
+<span class="fc" id="L75">        ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; layout = Map.getMap();</span>
+
+<span class="fc" id="L77">        int bombX = this.x / Map.getTileWidth();</span>
+<span class="fc" id="L78">        int bombY = (this.y / Map.getTileWidth()) - Map.getPixelOffset();</span>
+
+<span class="fc" id="L80">        GameObject left1 = layout.get(bombY).get(bombX - 1);</span>
+<span class="fc" id="L81">        GameObject right1 = layout.get(bombY).get(bombX + 1);</span>
+<span class="fc" id="L82">        GameObject up1 = layout.get(bombY - 1).get(bombX);</span>
+<span class="fc" id="L83">        GameObject down1 = layout.get(bombY + 1).get(bombX);        </span>
+
+        try{
+<span class="fc" id="L86">            GameObject left2 = layout.get(bombY).get(bombX - 2);</span>
+
+<span class="fc bfc" id="L88" title="All 4 branches covered.">            if(((Tile)left2).isEmpty() == false &amp;&amp; ((Tile)left2).isBreakable() == false) {</span>
+<span class="fc" id="L89">                this.leftBoom2 = false;</span>
+            }
+<span class="nc" id="L91">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L92">            this.leftBoom2 = false;</span>
+<span class="fc" id="L93">        }</span>
+        
+        try{
+<span class="fc" id="L96">            GameObject right2 = layout.get(bombY).get(bombX + 2);</span>
+
+<span class="fc bfc" id="L98" title="All 4 branches covered.">            if(((Tile)right2).isEmpty() == false &amp;&amp; ((Tile)right2).isBreakable() == false) {</span>
+<span class="fc" id="L99">                this.rightBoom2 = false;</span>
+            }
+<span class="nc" id="L101">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L102">            this.rightBoom2 = false;</span>
+<span class="fc" id="L103">        }</span>
+        
+        try {
+<span class="fc" id="L106">            GameObject up2 = layout.get(bombY - 2).get(bombX);</span>
+
+<span class="pc bpc" id="L108" title="1 of 4 branches missed.">            if(((Tile)up2).isEmpty() == false &amp;&amp; ((Tile)up2).isBreakable() == false) {</span>
+<span class="fc" id="L109">                this.upBoom2 = false;</span>
+            }
+<span class="nc" id="L111">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L112">            this.upBoom2 = false;</span>
+<span class="fc" id="L113">        }</span>
+        
+        try{
+<span class="fc" id="L116">            GameObject down2 = layout.get(bombY + 2).get(bombX);</span>
+
+<span class="pc bpc" id="L118" title="1 of 4 branches missed.">            if(((Tile)down2).isEmpty() == false &amp;&amp; ((Tile)down2).isBreakable() == false) {</span>
+<span class="fc" id="L119">                this.downBoom2 = false;</span>
+            }
+<span class="nc" id="L121">        } catch (IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L122">            this.downBoom2 = false;</span>
+<span class="fc" id="L123">        }</span>
+        
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if(((Tile)left1).isEmpty() == false) {</span>
+<span class="fc" id="L126">            this.leftBoom1 = false;</span>
+<span class="fc" id="L127">            this.leftBoom2 = false;</span>
+
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">            if(((Tile)left1).isBreakable()) {</span>
+<span class="fc" id="L130">                this.leftBoom1 = true;</span>
+<span class="fc" id="L131">                this.leftBoom2 = false;</span>
+            }
+        }
+
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if(((Tile)right1).isEmpty() == false) {</span>
+<span class="fc" id="L136">            this.rightBoom1 = false;</span>
+<span class="fc" id="L137">            this.rightBoom2 = false;</span>
+
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if(((Tile)right1).isBreakable()) {</span>
+<span class="fc" id="L140">                this.rightBoom1 = true;</span>
+<span class="fc" id="L141">                this.rightBoom2 = false;</span>
+            }
+        }
+
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if(((Tile)down1).isEmpty() == false) {</span>
+<span class="fc" id="L146">            this.downBoom1 = false;</span>
+<span class="fc" id="L147">            this.downBoom2 = false;</span>
+
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            if(((Tile)down1).isBreakable()) {</span>
+<span class="fc" id="L150">                this.downBoom1 = true;</span>
+<span class="fc" id="L151">                this.downBoom2 = false;</span>
+            }
+        }
+
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if(((Tile)up1).isEmpty() == false) {</span>
+<span class="fc" id="L156">            this.upBoom1 = false;</span>
+<span class="fc" id="L157">            this.upBoom2 = false;</span>
+
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">            if(((Tile)up1).isBreakable()) {</span>
+<span class="fc" id="L160">                this.upBoom1 = true;</span>
+<span class="fc" id="L161">                this.upBoom2 = false;</span>
+            }
+        }
+<span class="fc" id="L164">    }</span>
+
+    /**
+    * Adds the explosions
+    */
+    public void addExplosions() {
+<span class="fc" id="L170">        App.mapClass.addBoom(new Explosion(this.x, this.y, App.mapClass.getCentreBoom()));</span>
+
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if(this.leftBoom1) {</span>
+<span class="fc" id="L173">            App.mapClass.addBoom(new Explosion(this.x - Map.getTileWidth(), this.y, App.mapClass.getHorizontalBoom()));</span>
+        }
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        if(this.leftBoom2) {</span>
+<span class="fc" id="L177">            App.mapClass.addBoom(new Explosion(this.x - (2 * Map.getTileWidth()), this.y, App.mapClass.getHorizontalBoom()));</span>
+        }
+
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">        if(this.upBoom1) {</span>
+<span class="fc" id="L181">            App.mapClass.addBoom(new Explosion(this.x, this.y - Map.getTileWidth(), App.mapClass.getVerticalBoom()));</span>
+        }
+
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        if(this.upBoom2) {</span>
+<span class="fc" id="L185">            App.mapClass.addBoom(new Explosion(this.x, this.y - (2 * Map.getTileWidth()), App.mapClass.getVerticalBoom()));</span>
+        }
+
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">        if(this.rightBoom1) {</span>
+<span class="fc" id="L189">            App.mapClass.addBoom(new Explosion(this.x + Map.getTileWidth(), this.y, App.mapClass.getHorizontalBoom()));</span>
+        }
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if(this.rightBoom2) {</span>
+<span class="fc" id="L193">            App.mapClass.addBoom(new Explosion(this.x + (2 * Map.getTileWidth()), this.y, App.mapClass.getHorizontalBoom()));</span>
+        }
+
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">        if(this.downBoom1) {</span>
+<span class="fc" id="L197">            App.mapClass.addBoom(new Explosion(this.x, this.y + Map.getTileWidth(), App.mapClass.getVerticalBoom()));</span>
+        }
+
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if(this.downBoom2) {</span>
+<span class="fc" id="L201">            App.mapClass.addBoom(new Explosion(this.x, this.y + (2 * Map.getTileWidth()), App.mapClass.getVerticalBoom()));</span>
+        }
+<span class="fc" id="L203">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

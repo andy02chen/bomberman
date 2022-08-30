@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+
+import processing.core.PImage;
+
+import java.util.ArrayList;
+
+public class Player extends Person {
+
+    /**
+    * Constructor for the player
+    * @param sprite, the player image
+    * @param x, the x value
+    * @param y, the y value
+    */
+    public Player(PImage sprite, int x, int y) {
+<span class="fc" id="L18">        super(x,y,sprite);</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+    * Draws the player
+    * @param app, the app drawing
+    */
+    public void draw(PApplet app) {
+<span class="fc" id="L26">        app.image(this.sprite, this.x, this.y);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+    * Handles the logic for the Player class,
+    * Such as if the player is dead, the animation
+    * and the movement
+    */
+    public void tick() {
+<span class="fc" id="L35">        touchExplosion();</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(!this.alive) {</span>
+<span class="fc" id="L38">            App.noLives.decreaseLives();</span>
+<span class="fc" id="L39">            App.leftPressed = false;</span>
+<span class="fc" id="L40">            App.rightPressed = false;</span>
+<span class="fc" id="L41">            App.upPressed = false;</span>
+<span class="fc" id="L42">            App.downPressed = false;</span>
+        }
+
+<span class="fc bfc" id="L45" title="All 4 branches covered.">        if(App.goal.getX() == this.x &amp;&amp; App.goal.getY() == (this.y + Map.getExtraPlayerHeight())) {</span>
+<span class="fc" id="L46">            App.mapClass.changeLevel();</span>
+        }
+
+<span class="fc" id="L49">        this.frameCounter++;</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if(this.frameCounter == this.framesPerAnimation) {</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if(faceDown) {</span>
+<span class="fc" id="L54">                this.sprite = App.mapClass.getDownAnimation().get(this.animationFrame);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            } else if (faceUp) {</span>
+<span class="fc" id="L56">                this.sprite = App.mapClass.getUpAnimation().get(this.animationFrame);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            } else if (faceRight) {</span>
+<span class="fc" id="L58">                this.sprite = App.mapClass.getRightAnimation().get(this.animationFrame);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">            } else if (faceLeft) {</span>
+<span class="fc" id="L60">                this.sprite = App.mapClass.getLeftAnimation().get(this.animationFrame);</span>
+            }
+            
+<span class="fc" id="L63">            this.animationFrame++;</span>
+<span class="fc" id="L64">            this.frameCounter = 0;</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if(this.animationFrame == 5) {</span>
+<span class="fc" id="L67">                this.animationFrame = 1;</span>
+            }
+        }
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if(!movesFound) {</span>
+<span class="fc" id="L72">            findMoves();</span>
+        }
+
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if(!moved) {</span>
+            
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">            if(App.leftPressed &amp;&amp; this.canMoveLeft) {</span>
+<span class="fc" id="L78">                this.moveLeft();</span>
+<span class="fc" id="L79">                this.changeDirectionLeft();</span>
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">            } else if(App.rightPressed &amp;&amp; this.canMoveRight) {</span>
+<span class="fc" id="L81">                this.moveRight();</span>
+<span class="fc" id="L82">                this.changeDirectionRight();</span>
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">            } else if(App.downPressed &amp;&amp; this.canMoveDown) {</span>
+<span class="fc" id="L84">                this.moveDown();</span>
+<span class="fc" id="L85">                this.changeDirectionDown();</span>
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">            } else if(App.upPressed &amp;&amp; this.canMoveUp) {</span>
+<span class="fc" id="L87">                this.moveUp();</span>
+<span class="fc" id="L88">                this.changeDirectionUp();</span>
+            }
+        }
+<span class="fc" id="L91">    }</span>
+
+    /**
+    * Changes the direction that the player is facing to up
+    */
+    public void changeDirectionUp() {
+<span class="fc" id="L97">        this.faceUp = true;</span>
+<span class="fc" id="L98">        this.faceDown = false;</span>
+<span class="fc" id="L99">        this.faceLeft = false;</span>
+<span class="fc" id="L100">        this.faceRight = false;</span>
+<span class="fc" id="L101">        this.sprite = App.mapClass.getPlayerUp();</span>
+<span class="fc" id="L102">    }</span>
+
+    /**
+    * The player faces down
+    */
+    public void changeDirectionDown() {
+<span class="fc" id="L108">        this.faceUp = false;</span>
+<span class="fc" id="L109">        this.faceDown = true;</span>
+<span class="fc" id="L110">        this.faceLeft = false;</span>
+<span class="fc" id="L111">        this.faceRight = false;</span>
+<span class="fc" id="L112">        this.sprite = App.mapClass.getPlayerDown();</span>
+<span class="fc" id="L113">    }</span>
+
+    /**
+    * The player faces left
+    */
+    public void changeDirectionLeft() {
+<span class="fc" id="L119">        this.faceUp = false;</span>
+<span class="fc" id="L120">        this.faceDown = false;</span>
+<span class="fc" id="L121">        this.faceLeft = true;</span>
+<span class="fc" id="L122">        this.faceRight = false;</span>
+<span class="fc" id="L123">        this.sprite = App.mapClass.getPlayerLeft();</span>
+<span class="fc" id="L124">    }</span>
+
+    /**
+    * The player faces rightt
+    */
+    public void changeDirectionRight() {
+<span class="fc" id="L130">        this.faceUp = false;</span>
+<span class="fc" id="L131">        this.faceDown = false;</span>
+<span class="fc" id="L132">        this.faceLeft = false;</span>
+<span class="fc" id="L133">        this.faceRight = true;</span>
+<span class="fc" id="L134">        this.sprite = App.mapClass.getPlayerRight();</span>
+<span class="fc" id="L135">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

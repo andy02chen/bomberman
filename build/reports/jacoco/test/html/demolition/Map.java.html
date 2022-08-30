@@ -1,0 +1,916 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Map.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Demolition</a> &gt; <a href="index.source.html" class="el_package">demolition</a> &gt; <span class="el_source">Map.java</span></div><h1>Map.java</h1><pre class="source lang-java linenums">package demolition;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.core.PFont;
+
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import java.util.Collections;
+
+public class Map {
+
+    /**
+    * Where the config.json file is located
+    */
+<span class="fc" id="L23">    public static String where = &quot;config.json&quot;;</span>
+
+    private final PImage solidWallImage;
+    private final PImage brokenWallImage;
+    private final PImage emptyTileImage;
+    private final PImage goalTileImage;
+    private final PImage livesIcon;
+    private final PImage timeIcon;
+
+    private PImage playerSprite;
+
+    private final PImage playerDown1;
+    private final PImage playerDown2;
+    private final PImage playerDown3;
+    private final PImage playerDown4;
+
+    private final PImage playerLeft1;
+    private final PImage playerLeft2;
+    private final PImage playerLeft3;
+    private final PImage playerLeft4;
+
+    private final PImage playerUp1;
+    private final PImage playerUp2;
+    private final PImage playerUp3;
+    private final PImage playerUp4;
+
+    private final PImage playerRight1;
+    private final PImage playerRight2;
+    private final PImage playerRight3;
+    private final PImage playerRight4;
+
+<span class="fc" id="L54">    private final HashMap&lt;Integer, PImage&gt; leftAnimation = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L55">    private final HashMap&lt;Integer, PImage&gt; rightAnimation = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L56">    private final HashMap&lt;Integer, PImage&gt; downAnimation = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L57">    private final HashMap&lt;Integer, PImage&gt; upAnimation = new HashMap&lt;Integer, PImage&gt;();</span>
+
+    private PImage redSprite;
+
+    private final PImage redDown1;
+    private final PImage redDown2;
+    private final PImage redDown3;
+    private final PImage redDown4;
+
+    private final PImage redLeft1;
+    private final PImage redLeft2;
+    private final PImage redLeft3;
+    private final PImage redLeft4;
+
+    private final PImage redUp1;
+    private final PImage redUp2;
+    private final PImage redUp3;
+    private final PImage redUp4;
+
+    private final PImage redRight1;
+    private final PImage redRight2;
+    private final PImage redRight3;
+    private final PImage redRight4;
+
+<span class="fc" id="L81">    private final HashMap&lt;Integer, PImage&gt; leftAnimation_Red = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L82">    private final HashMap&lt;Integer, PImage&gt; rightAnimation_Red = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L83">    private final HashMap&lt;Integer, PImage&gt; downAnimation_Red = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L84">    private final HashMap&lt;Integer, PImage&gt; upAnimation_Red = new HashMap&lt;Integer, PImage&gt;();</span>
+
+    private PImage yellowSprite;
+
+    private final PImage yellowDown1;
+    private final PImage yellowDown2;
+    private final PImage yellowDown3;
+    private final PImage yellowDown4;
+
+    private final PImage yellowLeft1;
+    private final PImage yellowLeft2;
+    private final PImage yellowLeft3;
+    private final PImage yellowLeft4;
+
+    private final PImage yellowUp1;
+    private final PImage yellowUp2;
+    private final PImage yellowUp3;
+    private final PImage yellowUp4;
+
+    private final PImage yellowRight1;
+    private final PImage yellowRight2;
+    private final PImage yellowRight3;
+    private final PImage yellowRight4;
+
+<span class="fc" id="L108">    private final HashMap&lt;Integer, PImage&gt; leftAnimation_Yellow = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L109">    private final HashMap&lt;Integer, PImage&gt; rightAnimation_Yellow = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L110">    private final HashMap&lt;Integer, PImage&gt; downAnimation_Yellow = new HashMap&lt;Integer, PImage&gt;();</span>
+<span class="fc" id="L111">    private final HashMap&lt;Integer, PImage&gt; upAnimation_Yellow = new HashMap&lt;Integer, PImage&gt;();</span>
+
+<span class="fc" id="L113">    private int firstFrame = 1;</span>
+<span class="fc" id="L114">    private int secondFrame = 2;</span>
+<span class="fc" id="L115">    private int thirdFrame = 3;</span>
+<span class="fc" id="L116">    private int fourthFrame = 4;</span>
+<span class="fc" id="L117">    private int fifthFrame = 5;</span>
+<span class="fc" id="L118">    private int sixthFrame = 6;</span>
+<span class="fc" id="L119">    private int seventhFrame = 7;</span>
+<span class="fc" id="L120">    private int eighthFrame = 8;</span>
+
+    private int currentLevel;
+    private int currentLevelTime;
+    private int levelLoaded;
+
+    private ArrayList&lt;String&gt; levels;
+    private ArrayList&lt;Integer&gt; times;
+    private static ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; map;
+
+    private static ArrayList&lt;Person&gt; allPeople;
+<span class="fc" id="L131">    private static ArrayList&lt;Bomb&gt; bombs = new ArrayList&lt;Bomb&gt;();;</span>
+<span class="fc" id="L132">    private static ArrayList&lt;Explosion&gt; booms = new ArrayList&lt;Explosion&gt;();</span>
+
+    private final PImage bomb1;
+    private final PImage bomb2;
+    private final PImage bomb3;
+    private final PImage bomb4;
+    private final PImage bomb5;
+    private final PImage bomb6;
+    private final PImage bomb7;
+    private final PImage bomb8;
+
+<span class="fc" id="L143">    private final HashMap&lt;Integer, PImage&gt; bomb_animation = new HashMap&lt;Integer, PImage&gt;();</span>
+
+    private static final int tileWidth = 32;
+    private static final int extraPlayerHeight = 16;
+    private static final int pixelOffset = 2;
+
+    private final PImage explosionCentre;
+    private final PImage explosionVertical;
+    private final PImage explosionHorizontal;
+
+    /**
+    * Constructor for Map, stores the images
+    * that will be used.
+    * @param app, the app that will display the map
+    */
+<span class="fc" id="L158">    public Map(PApplet app) {</span>
+<span class="fc" id="L159">        this.currentLevel = 1;</span>
+<span class="fc" id="L160">        this.levels = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L161">        this.times = new ArrayList&lt;Integer&gt;();</span>
+
+<span class="fc" id="L163">        this.solidWallImage = app.loadImage(&quot;src/main/resources/wall/solid.png&quot;);</span>
+<span class="fc" id="L164">        this.brokenWallImage = app.loadImage(&quot;src/main/resources/broken/broken.png&quot;);</span>
+<span class="fc" id="L165">        this.emptyTileImage = app.loadImage(&quot;src/main/resources/empty/empty.png&quot;);</span>
+<span class="fc" id="L166">        this.goalTileImage = app.loadImage(&quot;src/main/resources/goal/goal.png&quot;);</span>
+<span class="fc" id="L167">        this.livesIcon = app.loadImage(&quot;src/main/resources/icons/player.png&quot;);</span>
+<span class="fc" id="L168">        this.timeIcon = app.loadImage(&quot;src/main/resources/icons/clock.png&quot;);</span>
+
+<span class="fc" id="L170">        this.playerSprite = app.loadImage(&quot;src/main/resources/player/player1.png&quot;);</span>
+
+<span class="fc" id="L172">        this.playerDown1 = app.loadImage(&quot;src/main/resources/player/player1.png&quot;);</span>
+<span class="fc" id="L173">        this.playerDown2 = app.loadImage(&quot;src/main/resources/player/player2.png&quot;);</span>
+<span class="fc" id="L174">        this.playerDown3 = app.loadImage(&quot;src/main/resources/player/player3.png&quot;);</span>
+<span class="fc" id="L175">        this.playerDown4 = app.loadImage(&quot;src/main/resources/player/player4.png&quot;);</span>
+        
+<span class="fc" id="L177">        this.downAnimation.put(firstFrame,playerDown1);</span>
+<span class="fc" id="L178">        this.downAnimation.put(secondFrame,playerDown2);</span>
+<span class="fc" id="L179">        this.downAnimation.put(thirdFrame,playerDown3);</span>
+<span class="fc" id="L180">        this.downAnimation.put(fourthFrame,playerDown4);</span>
+
+<span class="fc" id="L182">        this.playerLeft1 = app.loadImage(&quot;src/main/resources/player/player_left1.png&quot;);</span>
+<span class="fc" id="L183">        this.playerLeft2 = app.loadImage(&quot;src/main/resources/player/player_left2.png&quot;);</span>
+<span class="fc" id="L184">        this.playerLeft3 = app.loadImage(&quot;src/main/resources/player/player_left3.png&quot;);</span>
+<span class="fc" id="L185">        this.playerLeft4 = app.loadImage(&quot;src/main/resources/player/player_left4.png&quot;);</span>
+
+<span class="fc" id="L187">        this.leftAnimation.put(firstFrame,playerLeft1);</span>
+<span class="fc" id="L188">        this.leftAnimation.put(secondFrame,playerLeft2);</span>
+<span class="fc" id="L189">        this.leftAnimation.put(thirdFrame,playerLeft3);</span>
+<span class="fc" id="L190">        this.leftAnimation.put(fourthFrame,playerLeft4);</span>
+
+<span class="fc" id="L192">        this.playerUp1 = app.loadImage(&quot;src/main/resources/player/player_up1.png&quot;);</span>
+<span class="fc" id="L193">        this.playerUp2 = app.loadImage(&quot;src/main/resources/player/player_up2.png&quot;);</span>
+<span class="fc" id="L194">        this.playerUp3 = app.loadImage(&quot;src/main/resources/player/player_up3.png&quot;);</span>
+<span class="fc" id="L195">        this.playerUp4 = app.loadImage(&quot;src/main/resources/player/player_up4.png&quot;);</span>
+
+<span class="fc" id="L197">        this.upAnimation.put(firstFrame,playerUp1);</span>
+<span class="fc" id="L198">        this.upAnimation.put(secondFrame,playerUp2);</span>
+<span class="fc" id="L199">        this.upAnimation.put(thirdFrame,playerUp3);</span>
+<span class="fc" id="L200">        this.upAnimation.put(fourthFrame,playerUp4);</span>
+
+<span class="fc" id="L202">        this.playerRight1 = app.loadImage(&quot;src/main/resources/player/player_right1.png&quot;);</span>
+<span class="fc" id="L203">        this.playerRight2 = app.loadImage(&quot;src/main/resources/player/player_right2.png&quot;);</span>
+<span class="fc" id="L204">        this.playerRight3 = app.loadImage(&quot;src/main/resources/player/player_right3.png&quot;);</span>
+<span class="fc" id="L205">        this.playerRight4 = app.loadImage(&quot;src/main/resources/player/player_right4.png&quot;);</span>
+
+<span class="fc" id="L207">        this.rightAnimation.put(firstFrame,playerRight1);</span>
+<span class="fc" id="L208">        this.rightAnimation.put(secondFrame,playerRight2);</span>
+<span class="fc" id="L209">        this.rightAnimation.put(thirdFrame,playerRight3);</span>
+<span class="fc" id="L210">        this.rightAnimation.put(fourthFrame,playerRight4);</span>
+
+
+<span class="fc" id="L213">        this.redSprite = app.loadImage(&quot;src/main/resources/red_enemy/red_down1.png&quot;);</span>
+
+<span class="fc" id="L215">        this.redDown1 = app.loadImage(&quot;src/main/resources/red_enemy/red_down1.png&quot;);</span>
+<span class="fc" id="L216">        this.redDown2 = app.loadImage(&quot;src/main/resources/red_enemy/red_down2.png&quot;);</span>
+<span class="fc" id="L217">        this.redDown3 = app.loadImage(&quot;src/main/resources/red_enemy/red_down3.png&quot;);</span>
+<span class="fc" id="L218">        this.redDown4 = app.loadImage(&quot;src/main/resources/red_enemy/red_down4.png&quot;);</span>
+        
+<span class="fc" id="L220">        this.downAnimation_Red.put(firstFrame,redDown1);</span>
+<span class="fc" id="L221">        this.downAnimation_Red.put(secondFrame,redDown2);</span>
+<span class="fc" id="L222">        this.downAnimation_Red.put(thirdFrame,redDown3);</span>
+<span class="fc" id="L223">        this.downAnimation_Red.put(fourthFrame,redDown4);</span>
+
+<span class="fc" id="L225">        this.redLeft1 = app.loadImage(&quot;src/main/resources/red_enemy/red_left1.png&quot;);</span>
+<span class="fc" id="L226">        this.redLeft2 = app.loadImage(&quot;src/main/resources/red_enemy/red_left2.png&quot;);</span>
+<span class="fc" id="L227">        this.redLeft3 = app.loadImage(&quot;src/main/resources/red_enemy/red_left3.png&quot;);</span>
+<span class="fc" id="L228">        this.redLeft4 = app.loadImage(&quot;src/main/resources/red_enemy/red_left4.png&quot;);</span>
+
+<span class="fc" id="L230">        this.leftAnimation_Red.put(firstFrame,redLeft1);</span>
+<span class="fc" id="L231">        this.leftAnimation_Red.put(secondFrame,redLeft2);</span>
+<span class="fc" id="L232">        this.leftAnimation_Red.put(thirdFrame,redLeft3);</span>
+<span class="fc" id="L233">        this.leftAnimation_Red.put(fourthFrame,redLeft4);</span>
+
+<span class="fc" id="L235">        this.redUp1 = app.loadImage(&quot;src/main/resources/red_enemy/red_up1.png&quot;);</span>
+<span class="fc" id="L236">        this.redUp2 = app.loadImage(&quot;src/main/resources/red_enemy/red_up2.png&quot;);</span>
+<span class="fc" id="L237">        this.redUp3 = app.loadImage(&quot;src/main/resources/red_enemy/red_up3.png&quot;);</span>
+<span class="fc" id="L238">        this.redUp4 = app.loadImage(&quot;src/main/resources/red_enemy/red_up4.png&quot;);</span>
+
+<span class="fc" id="L240">        this.upAnimation_Red.put(firstFrame,redUp1);</span>
+<span class="fc" id="L241">        this.upAnimation_Red.put(secondFrame,redUp2);</span>
+<span class="fc" id="L242">        this.upAnimation_Red.put(thirdFrame,redUp3);</span>
+<span class="fc" id="L243">        this.upAnimation_Red.put(fourthFrame,redUp4);</span>
+
+<span class="fc" id="L245">        this.redRight1 = app.loadImage(&quot;src/main/resources/red_enemy/red_right1.png&quot;);</span>
+<span class="fc" id="L246">        this.redRight2 = app.loadImage(&quot;src/main/resources/red_enemy/red_right2.png&quot;);</span>
+<span class="fc" id="L247">        this.redRight3 = app.loadImage(&quot;src/main/resources/red_enemy/red_right3.png&quot;);</span>
+<span class="fc" id="L248">        this.redRight4 = app.loadImage(&quot;src/main/resources/red_enemy/red_right4.png&quot;);</span>
+
+<span class="fc" id="L250">        this.rightAnimation_Red.put(firstFrame,redRight1);</span>
+<span class="fc" id="L251">        this.rightAnimation_Red.put(secondFrame,redRight2);</span>
+<span class="fc" id="L252">        this.rightAnimation_Red.put(thirdFrame,redRight3);</span>
+<span class="fc" id="L253">        this.rightAnimation_Red.put(fourthFrame,redRight4);</span>
+
+<span class="fc" id="L255">        this.yellowSprite = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down1.png&quot;);</span>
+
+<span class="fc" id="L257">        this.yellowDown1 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down1.png&quot;);</span>
+<span class="fc" id="L258">        this.yellowDown2 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down2.png&quot;);</span>
+<span class="fc" id="L259">        this.yellowDown3 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down3.png&quot;);</span>
+<span class="fc" id="L260">        this.yellowDown4 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_down4.png&quot;);</span>
+        
+<span class="fc" id="L262">        this.downAnimation_Yellow.put(firstFrame,yellowDown1);</span>
+<span class="fc" id="L263">        this.downAnimation_Yellow.put(secondFrame,yellowDown2);</span>
+<span class="fc" id="L264">        this.downAnimation_Yellow.put(thirdFrame,yellowDown3);</span>
+<span class="fc" id="L265">        this.downAnimation_Yellow.put(fourthFrame,yellowDown4);</span>
+
+<span class="fc" id="L267">        this.yellowLeft1 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left1.png&quot;);</span>
+<span class="fc" id="L268">        this.yellowLeft2 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left2.png&quot;);</span>
+<span class="fc" id="L269">        this.yellowLeft3 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left3.png&quot;);</span>
+<span class="fc" id="L270">        this.yellowLeft4 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_left4.png&quot;);</span>
+
+<span class="fc" id="L272">        this.leftAnimation_Yellow.put(firstFrame,yellowLeft1);</span>
+<span class="fc" id="L273">        this.leftAnimation_Yellow.put(secondFrame,yellowLeft2);</span>
+<span class="fc" id="L274">        this.leftAnimation_Yellow.put(thirdFrame,yellowLeft3);</span>
+<span class="fc" id="L275">        this.leftAnimation_Yellow.put(fourthFrame,yellowLeft4);</span>
+
+<span class="fc" id="L277">        this.yellowUp1 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up1.png&quot;);</span>
+<span class="fc" id="L278">        this.yellowUp2 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up2.png&quot;);</span>
+<span class="fc" id="L279">        this.yellowUp3 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up3.png&quot;);</span>
+<span class="fc" id="L280">        this.yellowUp4 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_up4.png&quot;);</span>
+
+<span class="fc" id="L282">        this.upAnimation_Yellow.put(firstFrame,yellowUp1);</span>
+<span class="fc" id="L283">        this.upAnimation_Yellow.put(secondFrame,yellowUp2);</span>
+<span class="fc" id="L284">        this.upAnimation_Yellow.put(thirdFrame,yellowUp3);</span>
+<span class="fc" id="L285">        this.upAnimation_Yellow.put(fourthFrame,yellowUp4);</span>
+
+<span class="fc" id="L287">        this.yellowRight1 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right1.png&quot;);</span>
+<span class="fc" id="L288">        this.yellowRight2 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right2.png&quot;);</span>
+<span class="fc" id="L289">        this.yellowRight3 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right3.png&quot;);</span>
+<span class="fc" id="L290">        this.yellowRight4 = app.loadImage(&quot;src/main/resources/yellow_enemy/yellow_right4.png&quot;);</span>
+
+<span class="fc" id="L292">        this.rightAnimation_Yellow.put(firstFrame,yellowRight1);</span>
+<span class="fc" id="L293">        this.rightAnimation_Yellow.put(secondFrame,yellowRight2);</span>
+<span class="fc" id="L294">        this.rightAnimation_Yellow.put(thirdFrame,yellowRight3);</span>
+<span class="fc" id="L295">        this.rightAnimation_Yellow.put(fourthFrame,yellowRight4);</span>
+
+<span class="fc" id="L297">        this.bomb1 = app.loadImage(&quot;src/main/resources/bomb/bomb1.png&quot;);</span>
+<span class="fc" id="L298">        this.bomb2 = app.loadImage(&quot;src/main/resources/bomb/bomb2.png&quot;);</span>
+<span class="fc" id="L299">        this.bomb3 = app.loadImage(&quot;src/main/resources/bomb/bomb3.png&quot;);</span>
+<span class="fc" id="L300">        this.bomb4 = app.loadImage(&quot;src/main/resources/bomb/bomb4.png&quot;);</span>
+<span class="fc" id="L301">        this.bomb5 = app.loadImage(&quot;src/main/resources/bomb/bomb5.png&quot;);</span>
+<span class="fc" id="L302">        this.bomb6 = app.loadImage(&quot;src/main/resources/bomb/bomb6.png&quot;);</span>
+<span class="fc" id="L303">        this.bomb7 = app.loadImage(&quot;src/main/resources/bomb/bomb7.png&quot;);</span>
+<span class="fc" id="L304">        this.bomb8 = app.loadImage(&quot;src/main/resources/bomb/bomb8.png&quot;);</span>
+
+<span class="fc" id="L306">        this.bomb_animation.put(firstFrame,bomb1);</span>
+<span class="fc" id="L307">        this.bomb_animation.put(secondFrame,bomb2);</span>
+<span class="fc" id="L308">        this.bomb_animation.put(thirdFrame,bomb3);</span>
+<span class="fc" id="L309">        this.bomb_animation.put(fourthFrame,bomb4);</span>
+<span class="fc" id="L310">        this.bomb_animation.put(fifthFrame,bomb5);</span>
+<span class="fc" id="L311">        this.bomb_animation.put(sixthFrame,bomb6);</span>
+<span class="fc" id="L312">        this.bomb_animation.put(seventhFrame,bomb7);</span>
+<span class="fc" id="L313">        this.bomb_animation.put(eighthFrame,bomb8);</span>
+
+<span class="fc" id="L315">        this.explosionCentre = app.loadImage(&quot;src/main/resources/explosion/centre.png&quot;);</span>
+<span class="fc" id="L316">        this.explosionHorizontal = app.loadImage(&quot;src/main/resources/explosion/horizontal.png&quot;);</span>
+<span class="fc" id="L317">        this.explosionVertical = app.loadImage(&quot;src/main/resources/explosion/vertical.png&quot;);</span>
+<span class="fc" id="L318">    }</span>
+
+    /**
+    * Calls the loadConfigs function to load the level
+    */
+    public void setup() {
+<span class="fc" id="L324">        loadConfigs();</span>
+<span class="fc" id="L325">    }</span>
+
+    /**
+    * Returns the width of a tile
+    * @return width
+    */
+    public static int getTileWidth() {
+<span class="fc" id="L332">        return tileWidth;</span>
+    }
+
+    /**
+    * Returns the extra height of the player\
+    * @return extra pixel height for player image
+    */
+    public static int getExtraPlayerHeight() {
+<span class="fc" id="L340">        return extraPlayerHeight;</span>
+    }
+
+    /**
+    * Returns the offset
+    * @return the offset
+    */
+    public static int getPixelOffset() {
+<span class="fc" id="L348">        return pixelOffset;</span>
+    }
+
+    /**
+    * Returns the map's layout
+    * @return the layout
+    */
+    public static ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; getMap() {
+<span class="fc" id="L356">        return map;</span>
+    }
+
+    /**
+    * Returns an empty tile image
+    * @return image of empty tile
+    */
+    public PImage getEmptyTile() {
+<span class="fc" id="L364">        return this.emptyTileImage;</span>
+    }
+
+    /**
+    * Returns the up-facing animation for the player
+    * @return HashMap of player's up animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getUpAnimation() {
+<span class="fc" id="L372">        return this.upAnimation;</span>
+    }
+
+    /**
+    * Returns the down-facing animation for the player
+    * @return HashMap of player's down animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getDownAnimation() {
+<span class="fc" id="L380">        return this.downAnimation;</span>
+    }
+
+    /**
+    * Returns the left-facing animation for the player
+    * @return HashMap of player's left animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getLeftAnimation() {
+<span class="fc" id="L388">        return this.leftAnimation;</span>
+    }
+
+    /**
+    * Returns the right-facing animation for the player
+    * @return HashMap of player's up animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getRightAnimation() {
+<span class="fc" id="L396">        return this.rightAnimation;</span>
+    }
+
+    /**
+    * Returns the first image of the up-facing animation for the player
+    * @return player's up image
+    */
+    public PImage getPlayerUp() {
+<span class="fc" id="L404">        return this.playerUp1;</span>
+    }
+
+    /**
+    * Returns the first image of the down-facing animation for the player
+    * @return player's down image
+    */
+    public PImage getPlayerDown() {
+<span class="fc" id="L412">        return this.playerDown1;</span>
+    }
+
+    /**
+    * Returns the first image of the left-facing animation for the player
+    * @return player's left image
+    */
+    public PImage getPlayerLeft() {
+<span class="fc" id="L420">        return this.playerLeft1;</span>
+    }
+
+    /**
+    * Returns the first image of the right-facing animation for the player
+    * @return player's right image
+    */
+    public PImage getPlayerRight() {
+<span class="fc" id="L428">        return this.playerRight1;</span>
+    }
+
+    /**
+    * Returns the up-facing animation for the red enemy
+    * @return HashMap of red enemy's up animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getUpAnimationRed() {
+<span class="fc" id="L436">        return this.upAnimation_Red;</span>
+    }
+
+    /**
+    * Returns the down-facing animation for the red enemy
+    * @return HashMap of red enemy's down animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getDownAnimationRed() {
+<span class="fc" id="L444">        return this.downAnimation_Red;</span>
+    }
+
+    /**
+    * Returns the left-facing animation for the red enemy
+    * @return HashMap of red enemy's left animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getLeftAnimationRed() {
+<span class="fc" id="L452">        return this.leftAnimation_Red;</span>
+    }
+
+    /**
+    * Returns the right-facing animation for the red enemy
+    * @return HashMap of red enemy's right animaton
+    */
+    public HashMap&lt;Integer, PImage&gt; getRightAnimationRed() {
+<span class="fc" id="L460">        return this.rightAnimation_Red;</span>
+    }
+
+    /**
+    * Returns the first image of the up-facing animation for the red enemy
+    * @return red enemy's up image
+    */
+    public PImage getRedUp() {
+<span class="fc" id="L468">        return this.redUp1;</span>
+    }
+
+
+    /**
+    * Returns the first image of the down-facing animation for the red enemy
+    * @return red enemy's down image
+    */
+    public PImage getRedDown() {
+<span class="fc" id="L477">        return this.redDown1;</span>
+    }
+
+    /**
+    * Returns the first image of the left-facing animation for the red enemy
+    * @return red enemy's left image
+    */
+    public PImage getRedLeft() {
+<span class="fc" id="L485">        return this.redLeft1;</span>
+    }
+
+    /**
+    * Returns the first image of the right-facing animation for the red enemy
+    * @return red enemy's right image
+    */
+    public PImage getRedRight() {
+<span class="fc" id="L493">        return this.redRight1;</span>
+    }
+
+    /**
+    * Returns the up-facing animation for the yellow enemy
+    * @return HashMap of yellow enemy's up animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getUpAnimationYellow() {
+<span class="fc" id="L501">        return this.upAnimation_Yellow;</span>
+    }
+
+    /**
+    * Returns the down-facing animation for the yellow enemy
+    * @return HashMap of yellow enemy's down animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getDownAnimationYellow() {
+<span class="fc" id="L509">        return this.downAnimation_Yellow;</span>
+    }
+
+    /**
+    * Returns the left-facing animation for the yellow enemy
+    * @return HashMap of yellow enemy's left animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getLeftAnimationYellow() {
+<span class="fc" id="L517">        return this.leftAnimation_Yellow;</span>
+    }
+
+    /**
+    * Returns the right-facing animation for the yellow enemy
+    * @return HashMap of yellow enemy's right animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getRightAnimationYellow() {
+<span class="fc" id="L525">        return this.rightAnimation_Yellow;</span>
+    }
+
+    /**
+    * Returns the first image of the up-facing animation for the yellow enemy
+    * @return yellow enemy's up image
+    */
+    public PImage getYellowUp() {
+<span class="fc" id="L533">        return this.yellowUp1;</span>
+    }
+
+    /**
+    * Returns the first image of the down-facing animation for the yellow enemy
+    * @return yellow enemy's down image
+    */
+    public PImage getYellowDown() {
+<span class="fc" id="L541">        return this.yellowDown1;</span>
+    }
+
+    /**
+    * Returns the first image of the left-facing animation for the yellow enemy
+    * @return yellow enemy's left image
+    */
+    public PImage getYellowLeft() {
+<span class="fc" id="L549">        return this.yellowLeft1;</span>
+    }
+
+    /**
+    * Returns the first image of the right-facing animation for the yellow enemy
+    * @return yellow enemy's right image
+    */
+    public PImage getYellowRight() {
+<span class="fc" id="L557">        return this.yellowRight1;</span>
+    }
+
+    /**
+    * Returns the bomb animation cycle
+    * @return a HashMap of the bomb animation
+    */
+    public HashMap&lt;Integer, PImage&gt; getBombAnimation() {
+<span class="fc" id="L565">        return this.bomb_animation;</span>
+    }
+
+    /**
+    * Returns the first image of the bomb cycle
+    * @return the first bomb image
+    */
+    public PImage getBomb1() {
+<span class="fc" id="L573">        return this.bomb1;</span>
+    }
+
+    /**
+    * Returns the list of bombs on the map
+    * @return list of bombs
+    */
+    public ArrayList&lt;Bomb&gt; getBombs() {
+<span class="nc" id="L581">        return this.bombs;</span>
+    }
+
+    /**
+    * Returns the centre explosion image
+    * @return centre explosion image
+    */
+    public PImage getCentreBoom() {
+<span class="fc" id="L589">        return this.explosionCentre;</span>
+    }
+
+    /**
+    * Returns the horizontal explosion image
+    * @return the horizontal explosion
+    */
+    public PImage getHorizontalBoom() {
+<span class="fc" id="L597">        return this.explosionHorizontal;</span>
+    }
+
+    /**
+    * Returns the vertical explosion image
+    * @return returns the vertical explosion
+    */
+    public PImage getVerticalBoom() {
+<span class="fc" id="L605">        return this.explosionVertical;</span>
+    }
+
+    /**
+    * Loads the data from the config files such as lives, levels, and the map
+    */
+    public void loadConfigs() {
+        try {
+<span class="fc" id="L613">            File readConfig = new File(where);</span>
+<span class="fc" id="L614">            Scanner configScan = new Scanner(readConfig);</span>
+
+<span class="fc" id="L616">            String configurations = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L618" title="All 2 branches covered.">            while(configScan.hasNext()) {</span>
+<span class="fc" id="L619">                configurations = configurations + configScan.nextLine();</span>
+            }
+
+<span class="fc" id="L622">            JSONObject config = JSONObject.parse(configurations);</span>
+
+<span class="fc" id="L624">            App.noLives = new Lives(127,15,this.livesIcon,config.getInt(&quot;lives&quot;));</span>
+
+<span class="fc" id="L626">            JSONArray whichLevel = config.getJSONArray(&quot;levels&quot;);</span>
+
+<span class="fc bfc" id="L628" title="All 2 branches covered.">            for (int i = 0; i &lt; whichLevel.size(); i++) {</span>
+<span class="fc" id="L629">                String level = whichLevel.getJSONObject(i).getString(&quot;path&quot;);</span>
+<span class="fc" id="L630">                int time = whichLevel.getJSONObject(i).getInt(&quot;time&quot;);</span>
+
+<span class="fc" id="L632">                this.levels.add(level);</span>
+<span class="fc" id="L633">                this.times.add(time);</span>
+            }
+
+<span class="fc" id="L636">            configScan.close();</span>
+            
+<span class="nc" id="L638">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L639">            e.printStackTrace();</span>
+<span class="fc" id="L640">        }</span>
+<span class="fc" id="L641">    }</span>
+
+    /**
+    * Retrieves the level and stores it so that it can be used later
+    * @return returns the level read from the file
+    */
+    public ArrayList&lt;ArrayList&lt;Character&gt;&gt; getLevel() {
+<span class="fc" id="L648">        ArrayList&lt;ArrayList&lt;Character&gt;&gt; layout = new ArrayList&lt;ArrayList&lt;Character&gt;&gt;();</span>
+<span class="fc" id="L649">        String level = this.levels.get(this.currentLevel - 1);</span>
+<span class="fc" id="L650">        this.currentLevelTime = this.times.get(this.currentLevel - 1);</span>
+
+        try{
+<span class="fc" id="L653">            File readLevel = new File(level);</span>
+<span class="fc" id="L654">            Scanner getRows = new Scanner(readLevel);</span>
+<span class="fc" id="L655">            int rows = 0;</span>
+<span class="fc" id="L656">            int columns = 0;</span>
+
+<span class="fc bfc" id="L658" title="All 2 branches covered.">            while(getRows.hasNextLine()) {</span>
+<span class="fc" id="L659">                getRows.nextLine();</span>
+<span class="fc" id="L660">                rows++;</span>
+            }
+
+<span class="fc" id="L663">            getRows.close();</span>
+
+<span class="fc bfc" id="L665" title="All 2 branches covered.">            for(int i = 0; i &lt; rows; i++) {</span>
+<span class="fc" id="L666">                layout.add(new ArrayList&lt;Character&gt;());</span>
+            }
+
+<span class="fc" id="L669">            int rowNum = 0;</span>
+
+<span class="fc" id="L671">            Scanner readLayout = new Scanner(readLevel);</span>
+<span class="fc bfc" id="L672" title="All 2 branches covered.">            while(readLayout.hasNextLine()) {</span>
+<span class="fc" id="L673">                String row = readLayout.nextLine();</span>
+<span class="fc bfc" id="L674" title="All 2 branches covered.">                for(int i = 0; i &lt; row.length(); i++) {</span>
+<span class="fc" id="L675">                    char letter = row.charAt(i);</span>
+<span class="fc" id="L676">                    layout.get(rowNum).add(letter);</span>
+                }
+<span class="fc" id="L678">                rowNum++;</span>
+<span class="fc" id="L679">            }</span>
+<span class="fc" id="L680">            readLayout.close();</span>
+<span class="nc" id="L681">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L682">            e.printStackTrace();</span>
+<span class="fc" id="L683">        }</span>
+<span class="fc" id="L684">        return layout;</span>
+    }
+
+    /**
+    * Creates the level layout 
+    * @return the layoyt of the level
+    */
+    public ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; createLevel() {
+<span class="fc" id="L692">        this.map = new ArrayList&lt;ArrayList&lt;GameObject&gt;&gt;();</span>
+<span class="fc" id="L693">        this.allPeople = new ArrayList&lt;Person&gt;();</span>
+<span class="fc" id="L694">        this.booms = new ArrayList&lt;Explosion&gt;();</span>
+<span class="fc" id="L695">        this.bombs = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc" id="L696">        ArrayList&lt;ArrayList&lt;Character&gt;&gt; layout = getLevel();</span>
+
+<span class="fc bfc" id="L698" title="All 2 branches covered.">        for(int i = 0; i &lt; layout.size(); i++) {</span>
+
+<span class="fc" id="L700">            map.add(new ArrayList&lt;GameObject&gt;());</span>
+
+<span class="fc bfc" id="L702" title="All 2 branches covered.">            for(int j = 0; j &lt; layout.get(i).size(); j++) {</span>
+            
+<span class="fc bfc" id="L704" title="All 2 branches covered.">                if(layout.get(i).get(j) == 'W'){</span>
+<span class="fc" id="L705">                    map.get(i).add(new SolidWall(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.solidWallImage));</span>
+
+<span class="fc bfc" id="L707" title="All 2 branches covered.">                } else if (layout.get(i).get(j) == ' ') {</span>
+<span class="fc" id="L708">                    map.get(i).add(new EmptyTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.emptyTileImage));</span>
+
+<span class="fc bfc" id="L710" title="All 2 branches covered.">                } else if(layout.get(i).get(j) == 'Y') {</span>
+
+<span class="fc" id="L712">                    map.get(i).add(new EmptyTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.emptyTileImage));</span>
+<span class="fc" id="L713">                    allPeople.add(new Yellow(this.yellowDown1, j * this.tileWidth, (i + pixelOffset) * this.tileWidth - this.extraPlayerHeight));</span>
+
+<span class="fc bfc" id="L715" title="All 2 branches covered.">                } else if(layout.get(i).get(j) == 'R') {</span>
+<span class="fc" id="L716">                    map.get(i).add(new EmptyTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.emptyTileImage));</span>
+<span class="fc" id="L717">                    allPeople.add(new Red(this.redDown1, j * this.tileWidth, (i + pixelOffset) * this.tileWidth - this.extraPlayerHeight));</span>
+
+<span class="fc bfc" id="L719" title="All 2 branches covered.">                } else if (layout.get(i).get(j) == 'B') {</span>
+<span class="fc" id="L720">                    map.get(i).add(new BrokenWall(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.brokenWallImage));</span>
+
+<span class="fc bfc" id="L722" title="All 2 branches covered.">                } else if (layout.get(i).get(j) == 'G') {</span>
+<span class="fc" id="L723">                    map.get(i).add(new GoalTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.goalTileImage));</span>
+<span class="fc" id="L724">                    App.goal = new GoalTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.goalTileImage);</span>
+
+<span class="pc bpc" id="L726" title="1 of 2 branches missed.">                } else if (layout.get(i).get(j) == 'P') {</span>
+<span class="fc" id="L727">                    map.get(i).add(new EmptyTile(j * this.tileWidth, (i + pixelOffset) * this.tileWidth, this.emptyTileImage));</span>
+
+<span class="fc" id="L729">                    App.player = new Player(this.playerDown1 ,j * this.tileWidth, (i + pixelOffset) * this.tileWidth - this.extraPlayerHeight);</span>
+<span class="fc" id="L730">                    allPeople.add(App.player);</span>
+                }
+            }
+        }
+<span class="fc" id="L734">        return this.map;</span>
+    }
+    
+    /**
+    * Displays the level
+    * @param app, the app that will display
+    */
+    public void displayLevel(PApplet app) {
+<span class="pc bpc" id="L742" title="1 of 4 branches missed.">        if((this.currentLevel &gt; this.levelLoaded &amp;&amp; !App.win)) {</span>
+<span class="fc" id="L743">            App.reset = false;</span>
+<span class="fc" id="L744">            ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; map = createLevel();</span>
+<span class="fc" id="L745">            this.levelLoaded++;</span>
+<span class="fc" id="L746">            App.timer = new Clock(255,15,this.timeIcon,this.currentLevelTime);</span>
+<span class="fc bfc" id="L747" title="All 2 branches covered.">        } else if(App.reset) {</span>
+<span class="fc" id="L748">            App.reset = false;</span>
+<span class="fc" id="L749">            ArrayList&lt;ArrayList&lt;GameObject&gt;&gt; map = createLevel();</span>
+<span class="fc" id="L750">            App.timer = new Clock(255,15,this.timeIcon,this.currentLevelTime);</span>
+        }
+        
+<span class="fc bfc" id="L753" title="All 2 branches covered.">        for(int i = 0; i &lt;  map.size(); i++) {</span>
+<span class="fc bfc" id="L754" title="All 2 branches covered.">            for(int j = 0; j &lt;  map.get(i).size(); j++) {</span>
+<span class="fc" id="L755">                map.get(i).get(j).draw(app);</span>
+            }
+        }
+<span class="fc" id="L758">    }</span>
+
+    /**
+    * Changes the level so that the player is able to progress
+    */
+    public void changeLevel() {
+<span class="fc" id="L764">        App.leftPressed = false;</span>
+<span class="fc" id="L765">        App.rightPressed = false;</span>
+<span class="fc" id="L766">        App.downPressed = false;</span>
+<span class="fc" id="L767">        App.upPressed = false;</span>
+<span class="fc bfc" id="L768" title="All 2 branches covered.">        if(this.currentLevel != levels.size()) {</span>
+<span class="fc" id="L769">            this.currentLevel++;</span>
+        } else {
+<span class="fc" id="L771">            App.win = true;</span>
+        }
+<span class="fc" id="L773">    }</span>
+
+    /**
+    * Returns the people
+    * @return the list of people to be displayed
+    */
+    public ArrayList&lt;Person&gt; getPeople() {
+<span class="fc" id="L780">        return this.allPeople;</span>
+    }
+
+    /**
+    * Draws the people
+    * @param app, the app that will be drawing
+    */
+    public void peopleDraw(PApplet app) {
+<span class="fc bfc" id="L788" title="All 2 branches covered.">        for(Person toDraw : allPeople) {</span>
+<span class="fc" id="L789">            toDraw.draw(app);</span>
+<span class="fc" id="L790">        }</span>
+<span class="fc" id="L791">    }</span>
+    
+    /**
+    * Calls the tick function for the people in the game
+    */
+    public void peopleTick() {
+<span class="fc" id="L797">        Collections.sort(allPeople, Person.PersonComparator);</span>
+
+<span class="fc" id="L799">        allPeople.forEach((p) -&gt; p.tick());</span>
+<span class="fc" id="L800">    }</span>
+
+    /**
+    * Kills the people that are no longer in the level
+    */
+    public void kill() {
+<span class="fc" id="L806">        ArrayList&lt;Person&gt; keep = new ArrayList&lt;Person&gt;();</span>
+<span class="fc" id="L807">        this.allPeople.forEach((d) -&gt; {</span>
+<span class="fc bfc" id="L808" title="All 2 branches covered.">            if(d.getAlive() == true) {</span>
+<span class="fc" id="L809">                keep.add(d);</span>
+            }
+<span class="fc" id="L811">        });</span>
+
+<span class="fc" id="L813">        this.allPeople = keep;</span>
+<span class="fc" id="L814">    }</span>
+
+    /**
+    * Adds a bomb to the list
+    * @param boom, the bomb
+    */
+    public void addBomb(Bomb boom) {
+<span class="fc" id="L821">        bombs.add(boom);</span>
+<span class="fc" id="L822">    }</span>
+
+    /**
+    * Calls the tick function for each bomb in the list
+    */
+    public void bombTick() {
+<span class="fc" id="L828">        bombs.forEach((b) -&gt; b.tick());</span>
+<span class="fc" id="L829">    }</span>
+
+    /**
+    * Draws the bomb
+    * @param app, the app drawing the bomb
+    */
+    public void bombDraw(PApplet app) {
+<span class="fc" id="L836">        bombs.forEach((b) -&gt; b.draw(app));</span>
+<span class="fc" id="L837">    }</span>
+
+    /**
+    * Removes the bombs from the list
+    */
+    public void removeBombs() {
+<span class="fc" id="L843">        ArrayList&lt;Bomb&gt; keep = new ArrayList&lt;Bomb&gt;();</span>
+<span class="fc" id="L844">        this.bombs.forEach((b) -&gt; {</span>
+<span class="pc bpc" id="L845" title="1 of 2 branches missed.">            if(b.getRemove() == false) {</span>
+<span class="nc" id="L846">                keep.add(b);</span>
+            }
+<span class="fc" id="L848">        });</span>
+
+<span class="fc" id="L850">        this.bombs = keep;</span>
+<span class="fc" id="L851">    }</span>
+
+    /**
+    * Adds an explosion to the list of explosions
+    * @param explosion, the explosion that will be added
+    */
+    public void addBoom(Explosion explosion) {
+<span class="fc" id="L858">        booms.add(explosion);</span>
+<span class="fc" id="L859">    }</span>
+
+    /**
+    * Draws the explosion
+    * @param app, the app drawing
+    */
+    public void explosionsDraw(PApplet app) {
+<span class="fc" id="L866">        booms.forEach((e) -&gt; e.draw(app));</span>
+<span class="fc" id="L867">    }</span>
+
+    /**
+    * Calls the tick function for each explosion
+    */
+    public void explosionsTick() {
+<span class="fc" id="L873">        booms.forEach((e) -&gt; e.tick());</span>
+<span class="fc" id="L874">    }</span>
+
+    /**
+    * Removes the explosion after it has finished
+    */
+    public void removeBooms() {
+<span class="fc" id="L880">        ArrayList&lt;Explosion&gt; keep = new ArrayList&lt;Explosion&gt;();</span>
+<span class="fc" id="L881">        this.booms.forEach((e) -&gt; {</span>
+<span class="fc bfc" id="L882" title="All 2 branches covered.">            if(e.getRemove() == false) {</span>
+<span class="fc" id="L883">                keep.add(e);</span>
+            }
+<span class="fc" id="L885">        });</span>
+
+<span class="fc" id="L887">        this.booms = keep;</span>
+<span class="fc" id="L888">    }</span>
+
+    /**
+    * Changes the broken wall into an empty tile once it has been destroyed
+    * @param y, the y coordinate
+    * @param x, the x coordinatie
+    * @param wall, the wall to replace the broken wall
+    */
+    public void changeWall(int y, int x, GameObject wall) {
+<span class="fc" id="L897">        this.map.get(y).set(x, wall);</span>
+<span class="fc" id="L898">    }</span>
+
+    /**
+    * Returns the explosions
+    * @return the list of bombs
+    */
+    public ArrayList&lt;Explosion&gt; getBooms() {
+<span class="fc" id="L905">        return this.booms;</span>
+    }
+
+    /**
+    * Returns the current level
+    * @return the current level number
+    */
+    public int getCurrentLevel() {
+<span class="fc" id="L913">        return this.currentLevel;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
